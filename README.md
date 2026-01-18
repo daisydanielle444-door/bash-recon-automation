@@ -1,33 +1,40 @@
+# 💀 PivotOPS Recon Toolkit  
+A fast, modular Bash-based reconnaissance tool designed for practical OSINT, DNS enumeration, and network discovery. Built for clarity, speed, and real-world recon workflows.
+
 ---
 
-## 🧠 Skills Demonstrated  
+## 🛠️ Skills Demonstrated
 - Bash scripting  
 - OSINT methodology  
-- DNS enumeration  
 - API usage  
 - Network fundamentals  
-- Tool modularization  
-- Documentation and version control  
+- Tool documentation and version control  
 
 ---
 
-## 🖤 Branding  
+## 💡 Branding: PivotOPS
 PivotOPS is built around:
-- Purple cyber‑aesthetic  
-- Clean modular code  
-- Practical recon workflow  
-- The mindset: **“Just pivot.”**
+- Clear graphic execution  
+- Proper design context  
+- Practical recon  
+- The mindset: **Just pivot.**  
 
 ---
 
-## 📌 Future Enhancements  
-- Optional Nmap integration  
-- Wordlist-based subdomain brute forcing  
-- HTML/Markdown report generation  
-- Quiet/verbose modes  
-- Screenshot capture (Cutycapt/Wkhtmltoimage)
+## 🚀 Features
+- WHOIS lookup  
+- DNS record enumeration  
+- Subdomain brute forcing (wordlist-based)  
+- Multi-threaded report generation  
+- HTTP header collection  
+- SSL certificate inspection  
+- IP geolocation lookup  
+- Screenshot capture support  
+- Clean, timestamped output logs  
 
 ---
 
-## 🧩 License  
-This project is open-source under the MIT License.
+## 📦 Installation
+```bash
+chmod +x pivotrecon
+./pivotrecon example.com
