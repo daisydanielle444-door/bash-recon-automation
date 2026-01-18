@@ -1,0 +1,159 @@
+#!/bin/bash
+
+# ============================================
+#   Daisy's PivotOPS Recon Toolkit
+#   "Just pivot."
+# ============================================
+
+# ----- Color Variables -----
+PURPLE="\e[95m"
+RED="\e[91m"
+GREEN="\e[92m"
+YELLOW="\e[93m"
+RESET="\e[0m"
+
+# ----- Banner -----
+echo -e "${PURPLE}==========================================="
+echo -e "        P I V O T O P S   R E C O N"
+echo -e "===========================================${RESET}"
+
+# ----- Help Menu -----
+show_help() {
+    echo -e "${YELLOW}Usage:${RESET} pivotrecon <domain>"
+    echo "Runs a recon scan and saves results to a timestamped file."
+    echo "Example: ./pivotrecon example.com"
+}
+
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    show_help
+    exit 0
+fi
+
+# ----- Input Validation -----
+if [ -z "$1" ]; then
+    echo -e "${RED}Error:${RESET} No domain provided."
+    echo "Usage: $0 <domain>"
+    exit 1
+fi
+
+domain=$1
+timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
+output="recon_${domain}_${timestamp}.txt"
+
+echo -e "${GREEN}Starting recon on:${RESET} $domain"
+echo "Output will be saved to: $output"
+echo "-----------------------------------" > "$output"
+
+# ----- Dependency Check -----
+check_dependencies() {
+    tools=(whois dig nslookup curl traceroute host)
+
+    for tool in "${tools[@]}"; do
+        if ! command -v $tool &>/dev/null; then
+            echo -e "${RED}[!] Missing dependency:${RESET} $tool"
+        fi
+    done
+}
+
+check_dependencies
+
+# ============================
+#   Recon Functions
+# ============================
+
+run_whois() {
+    echo -e "${PURPLE}[+] Running WHOIS...${RESET}" | tee -a "$output"
+    whois "$domain" >> "$output" 2>/dev/null
+}
+
+run_dig() {
+    echo -e "${PURPLE}[+] Running DIG (ANY)...${RESET}" | tee -a "$output"
+    dig "$domain" ANY +noall +answer >> "$output"
+}
+
+run_dns_records() {
+    echo -e "${PURPLE}[+] Gathering DNS records...${RESET}" | tee -a "$output"
+
+    echo -e "\n--- A Records ---" >> "$output"
+    dig "$domain" A +short >> "$output"
+
+    echo -e "\n--- AAAA Records ---" >> "$output"
+    dig "$domain" AAAA +short >> "$output"
+
+    echo -e "\n--- MX Records ---" >> "$output"
+    dig "$domain" MX +short >> "$output"
+
+    echo -e "\n--- TXT Records ---" >> "$output"
+    dig "$domain" TXT +short >> "$output"
+
+    echo -e "\n--- NS Records ---" >> "$output"
+    dig "$domain" NS +short >> "$output"
+
+    echo -e "\n--- CNAME Records ---" >> "$output"
+    dig "$domain" CNAME +short >> "$output"
+}
+
+run_nslookup() {
+    echo -e "${PURPLE}[+] Running NSLOOKUP...${RESET}" | tee -a "$output"
+    nslookup "$domain" >> "$output" 2>/dev/null
+}
+
+run_headers() {
+    echo -e "${PURPLE}[+] Fetching HTTP headers...${RESET}" | tee -a "$output"
+    curl -I "$domain" >> "$output" 2>/dev/null
+}
+
+run_traceroute() {
+    echo -e "${PURPLE}[+] Running traceroute...${RESET}" | tee -a "$output"
+    traceroute "$domain" >> "$output" 2>/dev/null
+}
+
+run_subdomains() {
+    echo -e "${PURPLE}[+] Enumerating common subdomains...${RESET}" | tee -a "$output"
+
+    subdomains=(www mail dev api test staging vpn portal)
+
+    for sub in "${subdomains[@]}"; do
+        host "$sub.$domain" &>/dev/null
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}    [+] Found:${RESET} $sub.$domain" | tee -a "$output"
+        else
+            echo -e "${YELLOW}    [-] Not found:${RESET} $sub.$domain" >> "$output"
+        fi
+    done
+}
+
+run_geolocation() {
+    echo -e "${PURPLE}[+] Running IP geolocation lookup...${RESET}" | tee -a "$output"
+
+    ip=$(dig +short "$domain" | head -n 1)
+
+    if [ -z "$ip" ]; then
+        echo -e "${RED}[!] Could not resolve IP for $domain${RESET}" | tee -a "$output"
+        return
+    fi
+
+    echo -e "${GREEN}    [+] IP:${RESET} $ip" | tee -a "$output"
+
+    geo=$(curl -s "https://ipinfo.io/$ip/json")
+
+    echo -e "\n--- Geolocation Info ---" >> "$output"
+    echo "$geo" >> "$output"
+}
+
+# ============================
+#   Execute Recon
+# ============================
+
+run_whois
+run_dig
+run_dns_records
+run_nslookup
+run_headers
+run_traceroute
+run_subdomains
+run_geolocation
+
+echo "-----------------------------------" >> "$output"
+echo -e "${GREEN}Recon complete.${RESET} Results saved to $output"
+echo -e "${RED}PivotOPS active. 💀${RESET}"
