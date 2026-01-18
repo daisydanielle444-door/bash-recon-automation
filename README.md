@@ -39,3 +39,7 @@ PivotOPS is built around:
 chmod +x pivotrecon
 ./pivotrecon example.com
 
+![PivotOPS Recon Demo](pivotrecon-demo.png)
+
+💀 **PivotOPS in action. Just pivot.**
+
