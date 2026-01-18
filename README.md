@@ -36,5 +36,9 @@ PivotOPS is built around:
 
 ## 📦 Installation
 ```bash
-chmod +x pivotrecon
-./pivotrecon example.com
+
+![PivotOPS Recon Demo](pivotrecon-demo.png)
+
+💀 **PivotOPS in action. Just pivot.**
+
+
