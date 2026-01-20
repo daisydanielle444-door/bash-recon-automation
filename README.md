@@ -39,10 +39,13 @@ PivotOPS is built around:
 chmod +x pivotrecon
 ./pivotrecon example.com
 
---
+---
 
 ## 🖼️ Demo Screenshot
 ![PivotOPS Recon Demo](pivotrecon-demo.png)
 
 💀 **PivotOPS in action. Just pivot.**
 
+### Need a custom Bash script?
+I take commissions on Fiverr:  
+https://www.fiverr.com/daisy_hare/create-bash-scripts-for-linux
